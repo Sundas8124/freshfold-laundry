@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FreshFold Laundry — Pickup & Delivery</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f8fb; --card:#ffffff; --muted:#6b7280;
+  --accent:#2463ff; --accent-2:#00bfa6;
+  --radius:14px; --shadow:0 10px 30px rgba(18,38,63,0.08);
+  font-family:Inter, system-ui, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--bg),#ffffff);color:#071029;line-height:1.45}
+.container{max-width:1100px;margin:0 auto;padding:28px}
+/* HERO */
+.hero{position:relative;height:420px;border-bottom-left-radius:22px;border-bottom-right-radius:22px;overflow:hidden;margin-bottom:22px;box-shadow:var(--shadow)}
+.hero::before{content:'';position:absolute;inset:0;background-image:url('laundry-banner.jpg');background-size:cover;background-position:center;filter:contrast(0.96) brightness(0.92);transform:scale(1.02);will-change:transform}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.20));display:flex;align-items:center}
+.hero-inner{width:100%;display:flex;align-items:center;justify-content:space-between;padding:36px 48px;color:whitesmoke}
+.brand{display:flex;gap:16px;align-items:center}
+.brand-badge{width:76px;height:76px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:white}
+h1.hero-title{margin:0;font-size:34px}
+.punch{margin-top:8px;color:rgba(255,255,255,0.95);font-weight:500}
+.cta{display:inline-block;padding:12px 18px;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;text-decoration:none;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 420px;gap:22px}
+@media (max-width:920px){ .grid{grid-template-columns:1fr} .hero-inner{flex-direction:column;align-items:flex-start} }
+.card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(12,24,48,0.06)}
+.small{font-size:13px;color:var(--muted)}
+.items-list{display:grid;grid-template-columns:1fr;gap:10px}
+.item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;border:1px dashed #eef4ff}
+.item .left{display:flex;flex-direction:column}
+.qty{display:flex;gap:8px;align-items:center}
+.small-btn{background:#f6f8ff;padding:6px 8px;border-radius:8px;border:none;cursor:pointer}
+.summary .line{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #f1f5f9}
+.bmc{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.bmc .block{background:#fbfdff;border-radius:10px;padding:12px;border:1px solid #eef6ff}
+footer{margin-top:26px;text-align:center;color:var(--muted);font-size:13px}
+input[type="number"]{width:84px;padding:8px;border-radius:8px;border:1px solid #e9eef7}
+label{font-weight:600;font-size:14px}
+.muted-sm{color:var(--muted);font-size:13px}
+.success{background: #e6ffef; border:1px solid #9ee4b2;padding:10px;border-radius:8px;color:#06411b;margin:12px 0}
+.error{background:#ffe6e6;border:1px solid #f1a3a3;padding:10px;border-radius:8px;color:#7a1212;margin:12px 0}
+</style>
+</head>
+<body>
+
+  <div class="hero" role="img" aria-label="Laundry banner">
+    <div class="hero-overlay">
+      <div class="hero-inner container">
+        <div class="brand">
+          <div class="brand-badge">FF</div>
+          <div>
+            <h1 class="hero-title">FreshFold Laundry</h1>
+            <div class="punch">Doorstep laundry pickup & delivery — Clean, Fast & Reliable</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Open: Mon–Sat • 08:00–22:00</div>
+          <a class="cta" href="#order">Order Pickup</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <section>
+        <div class="card">
+          <h2 style="margin-top:0">Description & Prices</h2>
+          <p class="small">Below are the laundry prices per piece — shown for customer clarity.</p>
+          <ul class="small">
+            <li>Dress: <strong>PKR 150</strong></li>
+            <li>Fancy Dress: <strong>PKR 250</strong></li>
+            <li>Quilt / Carlin / Blanket: <strong>PKR 500</strong></li>
+            <li>Kids Dress: <strong>PKR 100</strong></li>
+            <li>3-piece wash: <strong>PKR 50</strong> (if you want an item for 3-piece bundle)</li>
+          </ul>
+        </div>
+
+        <div id="order" class="card" style="margin-top:18px">
+          <h3 style="margin-top:0">Place your order</h3>
+
+          <div id="msg"></div>
+
+          <form id="orderForm">
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <div style="flex:1;min-width:220px">
+                <label for="name">Full name</label>
+                <input id="name" type="text" required placeholder="Your full name" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+              </div>
+              <div style="width:220px">
+                <label for="phone">Phone</label>
+                <input id="phone" type="tel" required placeholder="+92XXXXXXXXXX" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px" value="+923136710919"/>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+              <div style="flex:1;min-width:220px">
+                <label for="email">Email (for confirmation)</label>
+                <input id="email" type="email" required placeholder="you@example.com" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+              </div>
+              <div style="flex:1;min-width:220px">
+                <label for="address">Pickup address</label>
+                <input id="address" type="text" required placeholder="House / Street / City" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+              </div>
+            </div>
+
+            <div style="margin-top:14px">
+              <label style="display:block;margin-bottom:8px">Select items & quantity</label>
+              <div class="items-list" id="items"></div>
+              <div class="muted-sm" style="margin-top:8px">Use the + and − buttons or type a number. Quantities update summary live.</div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+              <div style="flex:1;min-width:220px">
+                <label for="pickup">Pickup date & time</label>
+                <input id="pickup" type="datetime-local" required style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+              </div>
+              <div style="flex:1;min-width:220px">
+                <label for="deliveryPref">Delivery preference</label>
+                <select id="deliveryPref" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px">
+                  <option value="nextDay">Next day</option>
+                  <option value="sameDay">Same day (availability)</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="notes">Special instructions</label>
+              <textarea id="notes" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"></textarea>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+              <button type="submit" id="confirmBtn" class="cta" style="background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:10px 16px;border-radius:10px;border:none">Confirm order</button>
+              <button type="button" id="clearBtn" class="small-btn">Clear</button>
+              <div style="margin-left:auto" class="small">Pickup charge: <strong>PKR 60</strong> (flat)</div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 style="margin:0">Business Model Canvas</h3>
+            <button id="downloadBMC" style="background:var(--accent-2);color:white;border:none;padding:8px 10px;border-radius:10px;cursor:pointer">Download BMC</button>
+          </div>
+          <div style="margin-top:12px" class="bmc">
+            <div class="block"><div class="bmc-title">Introduction</div><div id="bmc-intro" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Company Structure</div><div id="bmc-structure" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Service Process</div><div id="bmc-process" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Tools & Equipment</div><div id="bmc-tools" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Customer Benefits</div><div id="bmc-benefits-cust" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Business Benefits</div><div id="bmc-benefits-biz" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Future Expansion</div><div id="bmc-future" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Conclusion</div><div id="bmc-conclusion" class="small"></div></div>
+          </div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card summary">
+          <h3 style="margin-top:0">Order summary</h3>
+          <div class="summary">
+            <div class="line"><div class="small">Total items</div><div id="totalItems">0</div></div>
+            <div class="line"><div class="small">Items subtotal</div><div id="subtotal">PKR 0</div></div>
+            <div class="line"><div class="small">Pickup charge</div><div id="pickupCharge">PKR 60</div></div>
+            <div class="line" style="font-weight:700"><div>Total</div><div id="total">PKR 0</div></div>
+          </div>
+
+          <div style="margin-top:12px"><div class="small">Orders (saved locally)</div><div class="orders-list" id="ordersList"></div></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Contact & Hours</h3>
+          <div class="small">
+            Phone: <strong>+92 313 6710919</strong><br>
+            Service Area: <strong>All around Bahawalpur</strong><br>
+            Hours: <strong>Monday–Saturday, 08:00–22:00</strong>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>© 2025 FreshFold Laundry — Demo site</footer>
+  </div>
+
+<script>
+/* ---------- Catalog (prices) ---------- */
+const CATALOG = [
+  { id:'dress', name:'Dress', price:150 },
+  { id:'fancy', name:'Fancy Dress', price:250 },
+  { id:'quilt', name:'Quilt / Carlin / Blanket', price:500 },
+  { id:'kids', name:'Kids Dress', price:100 },
+  { id:'three', name:'3-piece wash', price:50 }
+];
+const PICKUP_CHARGE = 60;
+const API_BASE = window.location.origin; // if hosted together; otherwise change to your API base
+
+/* Render items with plus/minus and numeric input */
+const itemsDiv = document.getElementById('items');
+const quantities = {};
+CATALOG.forEach(it=>{
+  quantities[it.id]=0;
+  const r = document.createElement('div');
+  r.className='item';
+  r.innerHTML = `
+    <div class="left">
+      <div style="font-weight:700">${it.name}</div>
+      <div class="muted-sm">PKR ${it.price} each</div>
+    </div>
+    <div class="qty">
+      <button class="small-btn dec" data-id="${it.id}">−</button>
+      <input type="number" min="0" value="0" id="q-${it.id}" data-id="${it.id}" style="text-align:center" />
+      <button class="small-btn inc" data-id="${it.id}">+</button>
+    </div>`;
+  itemsDiv.appendChild(r);
+});
+
+/* events */
+itemsDiv.addEventListener('click', (e)=>{
+  const id = e.target.dataset.id;
+  if(!id) return;
+  const input = document.getElementById('q-'+id);
+  if(e.target.classList.contains('inc')) input.value = Number(input.value||0) + 1;
+  if(e.target.classList.contains('dec')) input.value = Math.max(0, Number(input.value||0) - 1);
+  quantities[id] = Number(input.value);
+  recalc();
+});
+itemsDiv.addEventListener('input', (e)=>{
+  if(e.target.tagName==='INPUT' && e.target.type==='number'){
+    const id = e.target.dataset.id;
+    quantities[id] = Math.max(0, parseInt(e.target.value||'0',10));
+    recalc();
+  }
+});
+
+/* Summary elements */
+const subtotalEl = document.getElementById('subtotal');
+const totalEl = document.getElementById('total');
+const totalItemsEl = document.getElementById('totalItems');
+const pickupChargeEl = document.getElementById('pickupCharge');
+pickupChargeEl.innerText = 'PKR ' + PICKUP_CHARGE;
+
+/* recalc totals */
+function recalc(){
+  let sub=0, count=0;
+  for(const it of CATALOG){
+    const q = Number(quantities[it.id]||0);
+    sub += q * it.price;
+    count += q;
+    const inp = document.getElementById('q-'+it.id);
+    if(inp && Number(inp.value)!==q) inp.value = q;
+  }
+  subtotalEl.innerText = 'PKR ' + sub;
+  totalItemsEl.innerText = count;
+  const total = sub + (count>0 ? PICKUP_CHARGE : 0);
+  totalEl.innerText = 'PKR ' + total;
+}
+recalc();
+
+/* Orders list (local) */
+const ordersListEl = document.getElementById('ordersList');
+function renderOrders(){
+  const arr = JSON.parse(localStorage.getItem('ff_orders') || '[]');
+  ordersListEl.innerHTML = '';
+  if(arr.length===0){ ordersListEl.innerHTML = '<div class="small">No orders yet.</div>'; return; }
+  arr.forEach(o=>{
+    const el = document.createElement('div');
+    el.style.padding='8px'; el.style.borderBottom='1px dashed #f1f5f9';
+    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-weight:700">${o.name} — ${o.totalItems} items</div><div class="small">${new Date(o.created).toLocaleString()}</div></div>
+      <div style="text-align:right"><div style="font-weight:700">PKR ${o.total}</div><div class="small">${o.pickup}</div></div></div>`;
+    ordersListEl.appendChild(el);
+  });
+}
+renderOrders();
+
+/* Build order text for email/SMS */
+function buildOrderText(order){
+  let txt = Order ID: ${order.id}\nCustomer: ${order.name}\nPhone: ${order.phone}\nEmail: ${order.email}\nAddress: ${order.address}\nPickup: ${order.pickup}\nNotes: ${order.notes}\n\nItems:\n;
+  order.items.forEach(it => txt += ` - ${it.name}: ${it.qty} × PKR ${it.price} = PKR ${it.qty*it.price}\n`);
+  txt += \nSubtotal: PKR ${order.subtotal}\nPickup: PKR ${order.pickupCharge}\nTotal: PKR ${order.total};
+  return txt;
+}
+
+/* Submit: POST to server API */
+document.getElementById('orderForm').addEventListener('submit', async (ev)=>{
+  ev.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const pickup = document.getElementById('pickup').value;
+  const deliveryPref = document.getElementById('deliveryPref').value;
+  const notes = document.getElementById('notes').value.trim();
+
+  const items = [];
+  let subtotal = 0, totalItems = 0;
+  for(const it of CATALOG){
+    const q = Number(quantities[it.id]||0);
+    if(q>0){ items.push({ id:it.id, name:it.name, qty:q, price:it.price }); subtotal += q*it.price; totalItems += q; }
+  }
+  if(items.length===0){ alert('Please select items and quantities.'); return; }
+  if(!name || !phone || !email || !address || !pickup){ alert('Complete contact and pickup info.'); return; }
+
+  const pickupCharge = totalItems>0 ? PICKUP_CHARGE : 0;
+  const total = subtotal + pickupCharge;
+  const order = { id:'ORD'+Date.now(), name, phone, email, address, pickup, deliveryPref, notes, items, subtotal, pickupCharge, total, totalItems, created: new Date().toISOString() };
+
+  // POST to server
+  try{
+    const res = await fetch(API_BASE + '/api/order', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify(order)
+    });
+    const data = await res.json();
+    if(!res.ok){ throw new Error(data?.error || 'Server error'); }
+    // saved OK
+    // Save locally too for quick view
+    const arr = JSON.parse(localStorage.getItem('ff_orders') || '[]');
+    arr.unshift(order);
+    localStorage.setItem('ff_orders', JSON.stringify(arr));
+    renderOrders();
+    // show message
+    document.getElementById('msg').innerHTML = <div class="success">Order placed! Confirmation sent — Order ID: <strong>${order.id}</strong>. Total PKR ${order.total}.</div>;
+    // reset form
+    document.getElementById('orderForm').reset();
+    for(const k in quantities){ quantities[k]=0; const inp = document.getElementById('q-'+k); if(inp) inp.value = 0; }
+    recalc();
+  }catch(err){
+    console.error(err);
+    document.getElementById('msg').innerHTML = <div class="error">Could not place order: ${err.message}</div>;
+  }
+});
+
+/* Clear */
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  document.getElementById('orderForm').reset();
+  for(const k in quantities){ quantities[k]=0; const inp = document.getElementById('q-'+k); if(inp) inp.value = 0; }
+  recalc();
+});
+
+/* Download BMC (same as earlier) */
+const BMC = { intro: In today’s fast-paced..., structure:Operated by five members..., process:1) Order booking..., tools:Industrial washing machines..., benefitsCust:Saves time..., benefitsBiz:Simple low-cost setup..., future:Same-day delivery..., conclusion:A small efficient team... };
+document.getElementById('bmc-intro').innerText = BMC.intro;
+document.getElementById('bmc-structure').innerText = BMC.structure;
+document.getElementById('bmc-process').innerText = BMC.process;
+document.getElementById('bmc-tools').innerText = BMC.tools;
+document.getElementById('bmc-benefits-cust').innerText = BMC.benefitsCust;
+document.getElementById('bmc-benefits-biz').innerText = BMC.benefitsBiz;
+document.getElementById('bmc-future').innerText = BMC.future;
+document.getElementById('bmc-conclusion').innerText = BMC.conclusion;
+
+document.getElementById('downloadBMC').addEventListener('click', ()=>{
+  const content = BUSINESS MODEL CANVAS - LAUNDRY PICKUP & DELIVERY\n\nINTRODUCTION:\n${BMC.intro}\n\n...;
+  const blob = new Blob([content], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='BMC.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>

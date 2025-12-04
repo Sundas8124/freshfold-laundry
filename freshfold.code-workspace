@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "../../Music"
+		}
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": []
+	},
+	"extensions": {
+		"recommendations": [
+			"gateadavid.asmollydbg",
+			"prb28.amiga-assembly",
+			"xsro.masm-tasm"
+		]
+	}
+}
