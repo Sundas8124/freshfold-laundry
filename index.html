@@ -15,7 +15,6 @@
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(180deg,var(--bg),#ffffff);color:#071029;line-height:1.45}
 .container{max-width:1100px;margin:0 auto;padding:28px}
-/* HERO */
 .hero{position:relative;height:420px;border-bottom-left-radius:22px;border-bottom-right-radius:22px;overflow:hidden;margin-bottom:22px;box-shadow:var(--shadow)}
 .hero::before{content:'';position:absolute;inset:0;background-image:url('laundry-banner.jpg');background-size:cover;background-position:center;filter:contrast(0.96) brightness(0.92);transform:scale(1.02);will-change:transform}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.20));display:flex;align-items:center}
@@ -29,11 +28,16 @@ h1.hero-title{margin:0;font-size:34px}
 @media (max-width:920px){ .grid{grid-template-columns:1fr} .hero-inner{flex-direction:column;align-items:flex-start} }
 .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(12,24,48,0.06)}
 .small{font-size:13px;color:var(--muted)}
-.items-list{display:grid;grid-template-columns:1fr;gap:10px}
-.item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;border:1px dashed #eef4ff}
-.item .left{display:flex;flex-direction:column}
-.qty{display:flex;gap:8px;align-items:center}
+/* ITEMS LIST */
+.items-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+@media (max-width:720px){ .items-list{grid-template-columns:1fr} }
+.item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;border:1px solid #eef4ff;background:#fbfdff}
+.item .left{display:flex;flex-direction:column;gap:6px;flex:1}
+.item .left .name{font-weight:700}
+.item .left .meta{font-size:13px;color:var(--muted)}
+.qty{display:flex;gap:8px;align-items:center;margin-left:12px}
 .small-btn{background:#f6f8ff;padding:6px 8px;border-radius:8px;border:none;cursor:pointer}
+.qty input[type="number"]{width:78px;padding:8px;border-radius:8px;border:1px solid #e9eef7;text-align:center;font-size:14px}
 .summary .line{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #f1f5f9}
 .bmc{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .bmc .block{background:#fbfdff;border-radius:10px;padding:12px;border:1px solid #eef6ff}
@@ -43,6 +47,10 @@ label{font-weight:600;font-size:14px}
 .muted-sm{color:var(--muted);font-size:13px}
 .success{background: #e6ffef; border:1px solid #9ee4b2;padding:10px;border-radius:8px;color:#06411b;margin:12px 0}
 .error{background:#ffe6e6;border:1px solid #f1a3a3;padding:10px;border-radius:8px;color:#7a1212;margin:12px 0}
+select, input[type="text"], input[type="tel"], input[type="email"], textarea, input[type="datetime-local"]{
+  width:100%; padding:10px; border-radius:10px; border:1px solid #eef4ff; margin-top:6px; font-family:Inter, system-ui, Arial, sans-serif;
+}
+.small-btn:active{transform:translateY(1px)}
 </style>
 </head>
 <body>
@@ -69,15 +77,30 @@ label{font-weight:600;font-size:14px}
     <div class="grid">
       <section>
         <div class="card">
-          <h2 style="margin-top:0">Description & Prices</h2>
-          <p class="small">Below are the laundry prices per piece — shown for customer clarity.</p>
-          <ul class="small">
-            <li>Dress: <strong>PKR 150</strong></li>
-            <li>Fancy Dress: <strong>PKR 250</strong></li>
-            <li>Quilt / Carlin / Blanket: <strong>PKR 500</strong></li>
-            <li>Kids Dress: <strong>PKR 100</strong></li>
-            <li>3-piece wash: <strong>PKR 50</strong> (if you want an item for 3-piece bundle)</li>
+          <h2 style="margin-top:0">
+          <h2>Description & Prices</h2>
+<p>Below are the laundry prices per piece — shown for customer clarity. You can select exact types and quantities below to build your order.</p>
+
+<ul style="line-height:1.8; font-size:16px;">
+  <li><strong>Cotton Dress:</strong> PKR 50 per piece</li>
+  <li><strong>Silk Dress:</strong> PKR 80 per piece</li>
+  <li><strong>Fancy Dress:</strong> PKR 100 per piece</li>
+  <li><strong>Three-piece Suit / Jeans / Coat:</strong> PKR 250 per set</li>
+  <li><strong>Blanket:</strong> PKR 150 per piece</li>
+  <li><strong>Quilt or Rug:</strong> PKR 200 per piece</li>
+  <li><strong>Kids Dress:</strong> PKR 100 per piece</li>
+</ul>
+
+<p><strong>Membership Offer:</strong> Customers who purchase a <em>FreshFold Membership</em> get special discounts on every laundry service and free pickup for large orders.</p>
+          <ul class="small" id="priceList">
+            <!-- price list populated by JS -->
           </ul>
+          <div style="margin-top:12px" class="small">
+            <strong>Membership:</strong> Purchase a membership to receive a discount on your subtotal before pickup charge.<br>
+            - No membership: 0% discount<br>
+            - Silver membership: 10% discount<br>
+            - Gold membership: 15% discount
+          </div>
         </div>
 
         <div id="order" class="card" style="margin-top:18px">
@@ -89,39 +112,54 @@ label{font-weight:600;font-size:14px}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:1;min-width:220px">
                 <label for="name">Full name</label>
-                <input id="name" type="text" required placeholder="Your full name" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+                <input id="name" type="text" required placeholder="Your full name" />
               </div>
               <div style="width:220px">
                 <label for="phone">Phone</label>
-                <input id="phone" type="tel" required placeholder="+92XXXXXXXXXX" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px" value="+923136710919"/>
+                <input id="phone" type="tel" required placeholder="+92XXXXXXXXXX" value="+923136710919" />
               </div>
             </div>
 
             <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
               <div style="flex:1;min-width:220px">
                 <label for="email">Email (for confirmation)</label>
-                <input id="email" type="email" required placeholder="you@example.com" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+                <input id="email" type="email" required placeholder="you@example.com" />
               </div>
               <div style="flex:1;min-width:220px">
                 <label for="address">Pickup address</label>
-                <input id="address" type="text" required placeholder="House / Street / City" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+                <input id="address" type="text" required placeholder="House / Street / City" />
               </div>
             </div>
 
             <div style="margin-top:14px">
               <label style="display:block;margin-bottom:8px">Select items & quantity</label>
-              <div class="items-list" id="items"></div>
-              <div class="muted-sm" style="margin-top:8px">Use the + and − buttons or type a number. Quantities update summary live.</div>
+
+              <!-- freeform input where user can type their order (exactly what you asked for) -->
+              <input id="freeOrder" type="text" placeholder="Type items and quantities (e.g. '3 cotton dresses, 1 blanket')" />
+
+              <!-- membership selector -->
+              <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+                <label for="membership" style="margin:0">Membership</label>
+                <select id="membership" style="width:220px">
+                  <option value="none" data-discount="0">No membership — 0% discount</option>
+                  <option value="silver" data-discount="10">Silver membership — 10% discount</option>
+                  <option value="gold" data-discount="15">Gold membership — 15% discount</option>
+                </select>
+                <div class="small" style="margin-left:auto">Or enter items below individually</div>
+              </div>
+
+              <!-- items grid -->
+              <div class="items-list" id="items" style="margin-top:12px"></div>
             </div>
 
             <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
               <div style="flex:1;min-width:220px">
                 <label for="pickup">Pickup date & time</label>
-                <input id="pickup" type="datetime-local" required style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"/>
+                <input id="pickup" type="datetime-local" required />
               </div>
               <div style="flex:1;min-width:220px">
                 <label for="deliveryPref">Delivery preference</label>
-                <select id="deliveryPref" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px">
+                <select id="deliveryPref">
                   <option value="nextDay">Next day</option>
                   <option value="sameDay">Same day (availability)</option>
                   <option value="custom">Custom</option>
@@ -131,7 +169,7 @@ label{font-weight:600;font-size:14px}
 
             <div style="margin-top:12px">
               <label for="notes">Special instructions</label>
-              <textarea id="notes" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef4ff;margin-top:6px"></textarea>
+              <textarea id="notes" rows="2"></textarea>
             </div>
 
             <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
@@ -152,8 +190,8 @@ label{font-weight:600;font-size:14px}
             <div class="block"><div class="bmc-title">Company Structure</div><div id="bmc-structure" class="small"></div></div>
             <div class="block"><div class="bmc-title">Service Process</div><div id="bmc-process" class="small"></div></div>
             <div class="block"><div class="bmc-title">Tools & Equipment</div><div id="bmc-tools" class="small"></div></div>
-            <div class="block"><div class="bmc-title">Customer Benefits</div><div id="bmc-benefits-cust" class="small"></div></div>
-            <div class="block"><div class="bmc-title">Business Benefits</div><div id="bmc-benefits-biz" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Customer Segments</div><div id="bmc-benefits-cust" class="small"></div></div>
+            <div class="block"><div class="bmc-title">Revenue Streams</div><div id="bmc-benefits-biz" class="small"></div></div>
             <div class="block"><div class="bmc-title">Future Expansion</div><div id="bmc-future" class="small"></div></div>
             <div class="block"><div class="bmc-title">Conclusion</div><div id="bmc-conclusion" class="small"></div></div>
           </div>
@@ -167,6 +205,7 @@ label{font-weight:600;font-size:14px}
           <div class="summary">
             <div class="line"><div class="small">Total items</div><div id="totalItems">0</div></div>
             <div class="line"><div class="small">Items subtotal</div><div id="subtotal">PKR 0</div></div>
+            <div class="line"><div class="small">Membership discount</div><div id="discountAmt">PKR 0</div></div>
             <div class="line"><div class="small">Pickup charge</div><div id="pickupCharge">PKR 60</div></div>
             <div class="line" style="font-weight:700"><div>Total</div><div id="total">PKR 0</div></div>
           </div>
@@ -177,6 +216,7 @@ label{font-weight:600;font-size:14px}
         <div class="card" style="margin-top:14px">
           <h3 style="margin-top:0">Contact & Hours</h3>
           <div class="small">
+            Owner: <strong>Asam-ul-Haq</strong><br>
             Phone: <strong>+92 313 6710919</strong><br>
             Service Area: <strong>All around Bahawalpur</strong><br>
             Hours: <strong>Monday–Saturday, 08:00–22:00</strong>
@@ -189,16 +229,31 @@ label{font-weight:600;font-size:14px}
   </div>
 
 <script>
-/* ---------- Catalog (prices) ---------- */
+/* ---------- Catalog updated with the exact prices you requested ---------- */
 const CATALOG = [
-  { id:'dress', name:'Dress', price:150 },
-  { id:'fancy', name:'Fancy Dress', price:250 },
-  { id:'quilt', name:'Quilt / Carlin / Blanket', price:500 },
-  { id:'kids', name:'Kids Dress', price:100 },
-  { id:'three', name:'3-piece wash', price:50 }
+  { id:'cotton_dress', name:'Cotton dress', price:50 },      // 50 as you requested
+  { id:'silk_dress', name:'Silk dress', price:50 },         // 50
+  { id:'fancy_dress', name:'Fancy dress', price:100 },      // 100
+  { id:'three_piece', name:'3-piece (jeans/shirts/coats)', price:250 }, // 250
+  { id:'pant', name:'Pant / Trousers', price:100 },         // kept sensible
+  { id:'shirt', name:'Shirt', price:120 },
+  { id:'kids_dress', name:"Kids' dress", price:100 },
+  { id:'rug', name:'Rug (quilted/small)', price:200 },      // 200 as you requested for quilled rugs
+  { id:'blanket', name:'Blanket', price:150 },              // 150
+  { id:'quilt', name:'Quilt / Comforter', price:500 },      // kept existing quilt price (unchanged)
+  { id:'ac_comforter', name:'AC Comforter', price:450 }
 ];
 const PICKUP_CHARGE = 60;
-const API_BASE = window.location.origin; // if hosted together; otherwise change to your API base
+const API_BASE = window.location.origin;
+
+/* Render price list (Description & Prices) */
+const priceListEl = document.getElementById('priceList');
+priceListEl.innerHTML = '';
+CATALOG.forEach(it=>{
+  const li = document.createElement('li');
+  li.innerHTML = ${it.name}: <strong>PKR ${it.price}</strong>;
+  priceListEl.appendChild(li);
+});
 
 /* Render items with plus/minus and numeric input */
 const itemsDiv = document.getElementById('items');
@@ -209,18 +264,18 @@ CATALOG.forEach(it=>{
   r.className='item';
   r.innerHTML = `
     <div class="left">
-      <div style="font-weight:700">${it.name}</div>
-      <div class="muted-sm">PKR ${it.price} each</div>
+      <div class="name">${it.name}</div>
+      <div class="meta">PKR ${it.price} each</div>
     </div>
-    <div class="qty">
-      <button class="small-btn dec" data-id="${it.id}">−</button>
-      <input type="number" min="0" value="0" id="q-${it.id}" data-id="${it.id}" style="text-align:center" />
-      <button class="small-btn inc" data-id="${it.id}">+</button>
+    <div class="qty" aria-hidden="false">
+      <button class="small-btn dec" data-id="${it.id}" type="button">−</button>
+      <input type="number" min="0" value="0" id="q-${it.id}" data-id="${it.id}" />
+      <button class="small-btn inc" data-id="${it.id}" type="button">+</button>
     </div>`;
   itemsDiv.appendChild(r);
 });
 
-/* events */
+/* events for plus/minus and manual input */
 itemsDiv.addEventListener('click', (e)=>{
   const id = e.target.dataset.id;
   if(!id) return;
@@ -238,14 +293,22 @@ itemsDiv.addEventListener('input', (e)=>{
   }
 });
 
-/* Summary elements */
+/* summary elements */
 const subtotalEl = document.getElementById('subtotal');
 const totalEl = document.getElementById('total');
 const totalItemsEl = document.getElementById('totalItems');
 const pickupChargeEl = document.getElementById('pickupCharge');
+const discountAmtEl = document.getElementById('discountAmt');
 pickupChargeEl.innerText = 'PKR ' + PICKUP_CHARGE;
 
-/* recalc totals */
+/* membership selector */
+const membershipSelect = document.getElementById('membership');
+function getMembershipDiscountPercent(){
+  const opt = membershipSelect.options[membershipSelect.selectedIndex];
+  return Number(opt.dataset.discount || 0);
+}
+
+/* recalc totals with membership discount applied to subtotal */
 function recalc(){
   let sub=0, count=0;
   for(const it of CATALOG){
@@ -255,12 +318,20 @@ function recalc(){
     const inp = document.getElementById('q-'+it.id);
     if(inp && Number(inp.value)!==q) inp.value = q;
   }
+  const discountPercent = getMembershipDiscountPercent();
+  const discountAmt = Math.round(sub * discountPercent / 100);
+  const subAfterDiscount = sub - discountAmt;
+  const total = subAfterDiscount + (count>0 ? PICKUP_CHARGE : 0);
+
   subtotalEl.innerText = 'PKR ' + sub;
+  discountAmtEl.innerText = '- PKR ' + discountAmt + ` (${discountPercent}%)`;
   totalItemsEl.innerText = count;
-  const total = sub + (count>0 ? PICKUP_CHARGE : 0);
   totalEl.innerText = 'PKR ' + total;
 }
 recalc();
+
+/* when membership changes, recalc */
+membershipSelect.addEventListener('change', recalc);
 
 /* Orders list (local) */
 const ordersListEl = document.getElementById('ordersList');
@@ -273,21 +344,23 @@ function renderOrders(){
     el.style.padding='8px'; el.style.borderBottom='1px dashed #f1f5f9';
     el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
       <div><div style="font-weight:700">${o.name} — ${o.totalItems} items</div><div class="small">${new Date(o.created).toLocaleString()}</div></div>
-      <div style="text-align:right"><div style="font-weight:700">PKR ${o.total}</div><div class="small">${o.pickup}</div></div></div>`;
+      <div style="text-align:right"><div style="font-weight:700">PKR ${o.total}</div><div class="small">${new Date(o.pickup).toLocaleString()}</div></div></div>`;
     ordersListEl.appendChild(el);
   });
 }
 renderOrders();
 
-/* Build order text for email/SMS */
+/* Build order text */
 function buildOrderText(order){
-  let txt = Order ID: ${order.id}\nCustomer: ${order.name}\nPhone: ${order.phone}\nEmail: ${order.email}\nAddress: ${order.address}\nPickup: ${order.pickup}\nNotes: ${order.notes}\n\nItems:\n;
-  order.items.forEach(it => txt += ` - ${it.name}: ${it.qty} × PKR ${it.price} = PKR ${it.qty*it.price}\n`);
-  txt += \nSubtotal: PKR ${order.subtotal}\nPickup: PKR ${order.pickupCharge}\nTotal: PKR ${order.total};
+  let txt = Order ID: ${order.id}\nCustomer: ${order.name}\nPhone: ${order.phone}\nEmail: ${order.email}\nAddress: ${order.address}\nPickup: ${order.pickup}\nMembership: ${order.membership || 'none'}\nNotes: ${order.notes}\nFreeform order text: ${order.freeOrder || ''}\n\nItems:\n;
+  order.items.forEach(it => {
+    txt += ` - ${it.name}: ${it.qty} × PKR ${it.price} = PKR ${it.qty*it.price}\n`;
+  });
+  txt += \nSubtotal: PKR ${order.subtotal}\nMembership discount: PKR ${order.discountAmt}\nPickup: PKR ${order.pickupCharge}\nTotal: PKR ${order.total}\n;
   return txt;
 }
 
-/* Submit: POST to server API */
+/* Submit: POST to server API (fallback local) */
 document.getElementById('orderForm').addEventListener('submit', async (ev)=>{
   ev.preventDefault();
   const name = document.getElementById('name').value.trim();
@@ -297,6 +370,8 @@ document.getElementById('orderForm').addEventListener('submit', async (ev)=>{
   const pickup = document.getElementById('pickup').value;
   const deliveryPref = document.getElementById('deliveryPref').value;
   const notes = document.getElementById('notes').value.trim();
+  const freeOrder = document.getElementById('freeOrder').value.trim();
+  const membership = document.getElementById('membership').value;
 
   const items = [];
   let subtotal = 0, totalItems = 0;
@@ -304,64 +379,31 @@ document.getElementById('orderForm').addEventListener('submit', async (ev)=>{
     const q = Number(quantities[it.id]||0);
     if(q>0){ items.push({ id:it.id, name:it.name, qty:q, price:it.price }); subtotal += q*it.price; totalItems += q; }
   }
-  if(items.length===0){ alert('Please select items and quantities.'); return; }
+  if(items.length===0 && !freeOrder){ alert('Please select items and quantities or type your order in the text box.'); return; }
   if(!name || !phone || !email || !address || !pickup){ alert('Complete contact and pickup info.'); return; }
 
+  const discountPercent = getMembershipDiscountPercent();
+  const discountAmt = Math.round(subtotal * discountPercent / 100);
   const pickupCharge = totalItems>0 ? PICKUP_CHARGE : 0;
-  const total = subtotal + pickupCharge;
-  const order = { id:'ORD'+Date.now(), name, phone, email, address, pickup, deliveryPref, notes, items, subtotal, pickupCharge, total, totalItems, created: new Date().toISOString() };
+  const total = (subtotal - discountAmt) + pickupCharge;
 
-  // POST to server
+  const order = { id:'ORD'+Date.now(), name, phone, email, address, pickup, deliveryPref, notes, freeOrder, membership, items, subtotal, discountPercent, discountAmt, pickupCharge, total, totalItems, created: new Date().toISOString() };
+
   try{
     const res = await fetch(API_BASE + '/api/order', {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify(order)
     });
-    const data = await res.json();
-    if(!res.ok){ throw new Error(data?.error || 'Server error'); }
-    // saved OK
-    // Save locally too for quick view
-    const arr = JSON.parse(localStorage.getItem('ff_orders') || '[]');
-    arr.unshift(order);
-    localStorage.setItem('ff_orders', JSON.stringify(arr));
-    renderOrders();
-    // show message
-    document.getElementById('msg').innerHTML = <div class="success">Order placed! Confirmation sent — Order ID: <strong>${order.id}</strong>. Total PKR ${order.total}.</div>;
-    // reset form
-    document.getElementById('orderForm').reset();
-    for(const k in quantities){ quantities[k]=0; const inp = document.getElementById('q-'+k); if(inp) inp.value = 0; }
-    recalc();
+    if(res.ok){
+      saveLocalOrder(order);
+      showSuccess(order);
+    }else{
+      const data = await res.json().catch(()=>({}));
+      console.warn('Server error, saving locally:', data);
+      saveLocalOrder(order);
+      showSuccess(order, true);
+    }
   }catch(err){
-    console.error(err);
-    document.getElementById('msg').innerHTML = <div class="error">Could not place order: ${err.message}</div>;
-  }
-});
-
-/* Clear */
-document.getElementById('clearBtn').addEventListener('click', ()=>{
-  document.getElementById('orderForm').reset();
-  for(const k in quantities){ quantities[k]=0; const inp = document.getElementById('q-'+k); if(inp) inp.value = 0; }
-  recalc();
-});
-
-/* Download BMC (same as earlier) */
-const BMC = { intro: In today’s fast-paced..., structure:Operated by five members..., process:1) Order booking..., tools:Industrial washing machines..., benefitsCust:Saves time..., benefitsBiz:Simple low-cost setup..., future:Same-day delivery..., conclusion:A small efficient team... };
-document.getElementById('bmc-intro').innerText = BMC.intro;
-document.getElementById('bmc-structure').innerText = BMC.structure;
-document.getElementById('bmc-process').innerText = BMC.process;
-document.getElementById('bmc-tools').innerText = BMC.tools;
-document.getElementById('bmc-benefits-cust').innerText = BMC.benefitsCust;
-document.getElementById('bmc-benefits-biz').innerText = BMC.benefitsBiz;
-document.getElementById('bmc-future').innerText = BMC.future;
-document.getElementById('bmc-conclusion').innerText = BMC.conclusion;
-
-document.getElementById('downloadBMC').addEventListener('click', ()=>{
-  const content = BUSINESS MODEL CANVAS - LAUNDRY PICKUP & DELIVERY\n\nINTRODUCTION:\n${BMC.intro}\n\n...;
-  const blob = new Blob([content], {type:'text/plain'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download='BMC.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-</script>
-</body>
-</html>
+    console.warn('API not reachable, saving locally', err);
+    saveLocalOrder(
